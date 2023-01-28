@@ -10,10 +10,11 @@ class Searchbar extends React.Component {
     const{name,value}=target;
     this.setState({[name]:value})
  }
+
  handleSubmit=(e)=>{
   e.preventDefault();
-  const {onSabmit}=this.props;
-  onSabmit({...this.state})
+ const {onSubmit}=this.props;
+  onSubmit({...this.state})
  this.setState({search:''})
  }
   render(){

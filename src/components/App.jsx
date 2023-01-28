@@ -14,7 +14,7 @@ class App extends React.Component{
     }
 
     // componentDidMount(){}
-    componentDidUpdate(prevProps ,prevState){
+  componentDidUpdate(prevProps ,prevState){
       const{search}=this.state
 if(prevState.search!==search){
  axios.get(`https://jsonplaceholder.typicode.com/posts?q=${search}`)
@@ -28,10 +28,10 @@ if(prevState.search!==search){
 render(){
    const{items}=this.state ;
    const{searchImage}=this
-   console.log(this.state.search)
+   console.log(this.state)
 return(
   <> 
-  <Searchbar onSumbit={searchImage}/>
+  <Searchbar onSubmit={searchImage}/>
   <ImageGallery><ImageGalleryItem items={items}/></ImageGallery>
   
    {/* {loading && <p>.....loading</p>}   
