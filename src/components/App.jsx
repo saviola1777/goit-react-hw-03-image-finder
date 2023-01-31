@@ -7,92 +7,85 @@ import ImageGallery from 'components/ImageGallery/ImageGallery'
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem'
 import Button from 'components/Button/Button'
 import Modal from 'components/Modal/Modal'
-import {getAxios} from 'components/Api/GalleryApi'
+import { getAxios } from 'components/Api/GalleryApi'
 import Loader from 'components/Loader/Loader'
-class App extends React.Component{
+class App extends React.Component {
   state = {
-  items: [],                         //зберігаємо дані з аякс запиту , картинки опис тощо
-   loading: false ,                  //cтворюємо для того що коли йде запит ми могли показати спінер чи повідомлення що запит іде
-   error:null,                       //обєкт для повідомлення якщо є якась помилка 
-   search:'',                        //записуємо дані з мого інпута з поля в якому ми шукаємо картинки тощо
-   page:1,                          //пля пагінації при отправці сторінка має бути першою
-   showModal:false,                 //для нашої модалки щоб її не було видно при натискані на шось ставала тру і зявлялася 
-   largeImg:null,                   //будемо передавати велику картинку
+    items: [],                         //зберігаємо дані з аякс запиту , картинки опис тощо
+    loading: false,                  //cтворюємо для того що коли йде запит ми могли показати спінер чи повідомлення що запит іде
+    error: null,                       //обєкт для повідомлення якщо є якась помилка 
+    search: '',                        //записуємо дані з мого інпута з поля в якому ми шукаємо фотографію тощо
+    page: 1,                          //пля пагінації при отправці сторінка має бути першою
+    showModal: false,                 //для нашої модалки щоб її не було видно при натискані на шось ставала тру і зявлялася 
+    largeImg: null,                   //будемо передавати Big picture
 
+  }
+
+  componentDidUpdate(prevProps, prevState) {               //попередні пропси   попередній стейт
+    const { search, page } = this.state                         // доступ до стейта  
+    if (prevState.search !== search || prevState.page !== page) {   //якшо попередня строка пошуку не дорівнює  теперішній prevState.search -тобто тещо ми вписали попередній раз не таке саме що 
+      this.fetchPosts()                                       //що вписали зараз і так само номер page , то тоді ми визиваємо this.fetchPosts()
     }
+  }                                                       //this.fetchPosts() -це функція яка відповідає за повернення запиту і відловлювання помилок 
 
-  componentDidUpdate(prevProps ,prevState){               //попередні пропси   попередній стейт
-  const{search ,page}=this.state                         // доступ до стейта  
-if(prevState.search!==search ||prevState.page!==page){   //якшо попередня строка пошуку не дорівнює  теперішній prevState.search -тобто тещо ми вписали попередній раз не таке саме що 
- this.fetchPosts()                                       //що вписали зараз і так само номер page , то тоді ми визиваємо this.fetchPosts()
-}}                                                       //this.fetchPosts() -це функція яка відповідає за повернення запиту і відловлювання помилок 
-
-async fetchPosts(){
-  try{
-    this.setState({loading: true})
-    const{search ,page}=this.state ;
-    const data=await getAxios (search ,page)
-    this.setState(({items})=> ({items:[...items, ...data.hits]}));
-}
-catch(error){
-  this.setState({error:error.message})
-}
-finally{
-  this.setState({loading: false})
-}
-}
- 
-    searchImage=({search })=>{
-      this.setState({search , page:1 , items:[] })
-          }
-
-    loadMore=()=>{
-      this.setState(prevState=>({page:prevState.page+1}))  //prevState--завжди коли треба попереднє значення і тоді page:2 
+  async fetchPosts() {
+    try {
+      this.setState({ loading: true })
+      const { search, page } = this.state;
+      const data = await getAxios(search, page)
+      this.setState(({ items }) => ({ items: [...items, ...data.hits] }));
     }
-
-    showImage=({largeImageURL, tags })=>{
-      this.setState({
-        largeImg:{
-          largeImageURL, 
-          tags, 
-        },
-    showModal:true,
-      })
+    catch (error) {
+      this.setState({ error: error.message })
     }
-
-    closeModal=()=>{
-      this.setState({showModal:false , largeImg:null,})
+    finally {
+      this.setState({ loading: false })
     }
+  }
 
-render(){
-   const{items , loading , error , showModal , largeImg}=this.state ;
-   const{searchImage , loadMore, showImage , closeModal} = this ;
-   console.log(items,largeImg )
-return(
-  <> 
-  <Searchbar onSubmit={searchImage}/>
-  <ImageGallery><ImageGalleryItem items={items} showImage={showImage}/></ImageGallery>
-  
-  {loading && <Loader/>}   
-  {error&& <p>Something go wrong</p>}
-  {Boolean(items.length)&&<Button onClick={loadMore}/>}
-  {showModal&&<Modal largeImg={largeImg} close={closeModal}/>} 
- 
-</>
-)}
+  searchImage = ({ search }) => {                          //метод куди ми буде передавати search те що ми впишемо в інпут 
+    this.setState({ search, page: 1, items: [] })      //оскільки ми передаємо це як проп присабміті то записуємо те що ми пишемо в інпуті 
+  }                                             // при сабміті оскільки ми будеио знов шось шукати і захочемо отримати нові картинки page:1 ,items:[] очистить масив з картинками
+
+  loadMore = () => {                                          //prevState--завжди коли треба попереднє значення
+    this.setState(prevState => ({ page: prevState.page + 1 }))  //при натискані на кнопку loadmore в стейт буде плюсувати +1 да page і рендирити наступні картинки (пагінація) 
+  }
+
+  showImage = ({ largeImageURL, tags }) => {       //тут ми будемо забирати велику картинку і опис коли в методі this.setState то зажди стрілочна функція ()=>
+    this.setState({
+      largeImg: {                //в наш largeImg ми запишемо два забрані значення велику картинку largeImageURL, і опис tags,
+        largeImageURL,
+        tags,
+      },
+      showModal: true,                   //цей метод ми передамо як пропс передали в наш список з картинками і коли ми натиснемо на якусь карьтнку спраццює howModal:true і відкриє модадку
+    })
+  }
+
+  closeModal = () => {                                         //метод за допомогою якого ми будемо закривати модалку
+    this.setState({ showModal: false, largeImg: null, })      //закриває модалку і очишає мій обєкт з великою картинкою  largeImg:null,
+  }
+
+  render() {
+    const { items, loading, error, showModal, largeImg } = this.state;
+    const { searchImage, loadMore, showImage, closeModal } = this;
+    console.log(items)
+  return (
+      <>
+        <Searchbar onSubmit={searchImage} />
+        <ImageGallery><ImageGalleryItem items={items} showImage={showImage} /></ImageGallery>
+
+        {loading && <Loader />}
+        {error && <p>Something go wrong</p>}
+        {Boolean(items.length) && <Button onClick={loadMore} />}
+        {showModal && <Modal largeImg={largeImg} close={closeModal} />}
+
+      </>
+    )
+  }
 }
-  export default App
-  
+export default App
 
-//   componentDidMount(){                      //axios це запит на сервер коли ми хочемо забрати дані
-//     this.setState({loading:true}) //loading переписуємо на true і в самому рендері ставммо умову якщо loading:true то ми пишемо що йде загрузка чи вішаємо спінер якийсь
-//     axios.get('https://jsonplaceholder.typicode.com/posts?userId=2') // це наз запит  axios.get і посилання на самий запит 
-//     .then(({data})=>{console.log(data)   //then це відповідь ми получити наші дані дестректуризація і повернули в state наші дані
-//      this.setState({items:data })         // повертаємо дані в наш state.items
-// })
-//     .catch(error=>this.setState({error:error.message}))  // сatch відловлює помики , якшо при нашому запросі відбудеться помилка то ми state.error запищемо потім створемо умову нижче 
-//     .finally(()=>this.setState({loading: false})) //.finally() функція яка відбувається чи сталася помилка чи, вона спрацьовує чи буде помилка чи ні воно поміняє loading на false
-// }
+
 
 
 // componentDidUpdate(prevProps ,prevState){  //попередні пропси   попередній стейт

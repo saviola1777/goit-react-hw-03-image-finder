@@ -5,19 +5,19 @@ import PropTypes from 'prop-types';
 
 class Searchbar extends React.Component {
   state={
-    search:''
+    search:''                               // передаємо те що вписали в поле пошуку
   }
 
-  handleChancge=({target})=>{
-    const{name,value}=target;
-    this.setState({[name]:value})
+  handleChancge=({target})=>{               // звичайний метод для передачі того що ми пишемо в наш стейт в обєкт search
+    const{name,value}=target;               // деструктуризація 
+    this.setState({[name]:value})            // в наш стейт записуємо  [name]="search" value=те що ми вписуємо в поле пошуку нашого імпута
  }
 
- handleSubmit=(e)=>{
-  e.preventDefault();
- const {onSubmit}=this.props;
-  onSubmit({...this.state})
- this.setState({search:''})
+ handleSubmit=(e)=>{                         //метод отправки форми 
+  e.preventDefault();                        // щоб не перезагружало сторінку при отправці форми
+ const {onSubmit}=this.props;                // передаємо наш проп searchImage=({search })=>тут при отправці форми this.setState({search , page:1 , items:[] }) 
+  onSubmit({...this.state})                  //в мій стейт app розпилить значення search:тобто тещо ми записуємо в інпут 
+ this.setState({search:''})                  //після отправки очишає пошук 
  }
   render(){
     const {search}=this.state ;
@@ -25,7 +25,7 @@ class Searchbar extends React.Component {
     // console.log(this.state.search)
     return(
 <header className={css.searchbar}>
-  <form className={css.form} onSubmit={handleSubmit}>
+  <form className={css.form} onSubmit={handleSubmit}>  
     <input
       onChange={handleChancge}
       name="search"

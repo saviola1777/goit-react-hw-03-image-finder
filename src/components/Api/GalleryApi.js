@@ -12,7 +12,3 @@ export const getAxios =async(search ,page)=>{
 
 
 
-  // export const searchImage = async(search)=>{
-  //   const{data}=await axios.get(`https://pixabay.com/api/?q=${search}&key=31958740-fc1ca03b202680423fa77b228&image_type=photo&orientation=horizontal&per_page=12`)
-  //   return data
-  //   }

@@ -16,7 +16,6 @@ export default ImageGalleryItem ;
 ImageGalleryItem.defaultPrors={
   items:[]
 }
-
 ImageGalleryItem.prototype={
   showImage:PropTypes.func.isRequired,
 	items:PropTypes.arrayOf(PropTypes.shape({
@@ -26,3 +25,4 @@ ImageGalleryItem.prototype={
     tags:PropTypes.string.isRequired ,
 	})),
  }
+ 
