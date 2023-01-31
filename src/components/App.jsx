@@ -69,7 +69,8 @@ class App extends React.Component {
     const { items, loading, error, showModal, largeImg } = this.state;
     const { searchImage, loadMore, showImage, closeModal } = this;
     console.log(items)
-  return (
+  
+    return (
       <>
         <Searchbar onSubmit={searchImage} />
         <ImageGallery><ImageGalleryItem items={items} showImage={showImage} /></ImageGallery>
