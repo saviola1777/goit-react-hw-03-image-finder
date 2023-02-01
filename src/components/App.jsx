@@ -18,7 +18,8 @@ class App extends React.Component {
     page: 1,                          //пля пагінації при отправці сторінка має бути першою
     showModal: false,                 //для нашої модалки щоб її не було видно при натискані на шось ставала тру і зявлялася 
     largeImg: null,                   //будемо передавати Big picture
-
+    totalPages: 1,
+    perPage: 12,
   }
 
   componentDidUpdate(prevProps, prevState) {               //попередні пропси   попередній стейт
@@ -31,9 +32,12 @@ class App extends React.Component {
   async fetchPosts() {
     try {
       this.setState({ loading: true })
-      const { search, page } = this.state;
-      const data = await getAxios(search, page)
-      this.setState(({ items }) => ({ items: [...items, ...data.hits] }));
+      const { search, page ,perPage  } = this.state;
+      const {hits,totalHits} = await getAxios(search, page ,perPage )
+
+      this.getTotalPages(totalHits);
+
+      this.setState(({ items }) => ({ items: [...items, ...hits] }));
     }
     catch (error) {
       this.setState({ error: error.message })
@@ -41,6 +45,14 @@ class App extends React.Component {
     finally {
       this.setState({ loading: false })
     }
+  }
+
+  getTotalPages(totalHits) {
+    const { perPage } = this.state;
+    let pages = Math.floor(totalHits / 12);
+    pages = totalHits % perPage ? pages + 1 : pages;
+    console.log(pages);
+    this.setState({ totalPages: pages });
   }
 
   searchImage = ({ search }) => {                          //метод куди ми буде передавати search те що ми впишемо в інпут 
@@ -66,9 +78,9 @@ class App extends React.Component {
   }
 
   render() {
-    const { items, loading, error, showModal, largeImg } = this.state;
+    const { items, loading, error, showModal, largeImg ,page , totalPages } = this.state;
     const { searchImage, loadMore, showImage, closeModal } = this;
-    console.log(items)
+    console.log(this.state)
   
     return (
       <>
@@ -77,7 +89,7 @@ class App extends React.Component {
 
         {loading && <Loader />}
         {error && <p>Something go wrong</p>}
-        {Boolean(items.length) && <Button onClick={loadMore} />}
+        {Boolean(items.length) && <Button onClick={loadMore} page={page} totalPages={totalPages} />}
         {showModal && <Modal largeImg={largeImg} close={closeModal} />}
 
       </>
